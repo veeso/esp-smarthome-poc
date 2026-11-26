@@ -8,10 +8,10 @@ Fixes #
 
 ## Checklist
 
-- [ ] I have read the [AI Policy](https://github.com/veeso/rust-template/blob/main/AI_POLICY.md) and the [contributing guidelines](https://github.com/veeso/rust-template/blob/main/CONTRIBUTING.md).
+- [ ] I have read the [AI Policy](https://github.com/veeso/esp-smarthome-poc/blob/main/AI_POLICY.md) and the [contributing guidelines](https://github.com/veeso/esp-smarthome-poc/blob/main/CONTRIBUTING.md).
 - [ ] I have added rustdoc documentation for any new public API.
 - [ ] I have added tests covering my changes.
-- [ ] `just check_code` passes locally.
+- [ ] `just check` passes locally.
 - [ ] My commits follow the [Conventional Commits](https://www.conventionalcommits.org) format (the `CHANGELOG.md` is generated from them at release time).
 
 ## AI Disclosure
