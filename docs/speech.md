@@ -1,10 +1,12 @@
-# Can the voice controller fit in 16 MiB?
+# Speech budget for the 32 MiB controller
 
-**A single-image English lamp controller looks feasible with a fixed command
-list and synthesized replies.** MultiNet 5 Q8 and US English PicoTTS together
-with the esp-agent example account for roughly 11.4 MiB. That leaves about
-4.6 MiB for the speech runtime, controller changes, and partition overhead.
-This is a sizing estimate. The current firmware only logs a greeting.
+The ESP32-S3-DevKitC-1-N32R16V has **32 MiB flash and 16 MiB PSRAM**.
+For free-form English input, the esp-agent example with Potion (7.82 MiB),
+Oído v2B models (6.89 MiB) and US English PicoTTS (1.53 MiB) total about
+**16.24 MiB**. That exceeds the old 16 MiB budget and leaves **15.76 MiB**
+on the selected board for the STT engine, remaining firmware and partitions.
+This estimates one application image. The integrated image size, peak RAM
+use and microphone-to-reply latency still need measurements on the board.
 
 ## What goes into flash
 
@@ -13,14 +15,12 @@ This is a sizing estimate. The current firmware only logs a greeting.
   `potion-base-2M` (7.64 MiB for weights and compiled vocabulary). Count
   the example once. The lamp catalog, turn handler and audio drivers will
   change the final binary. [esp-agent model and firmware sizes][agent]
-- **Command recognition, 2.08 MiB of assets.** The three files in
-  `mn5q8_en` total 2,177,064 bytes. This excludes recognition code,
-  model-container headers and any additional front-end models. MultiNet
-  accepts 16 kHz, 16-bit mono audio from the front end. Register phrases
-  such as “turn on the lamp” and “turn off the lamp”. Map a recognized ID
-  to its canonical text for `Agent::turn`. A timeout produces no action.
-  Vocabulary must be declared in advance. [Model files][mn5] ·
-  [Recognition API][multinet]
+- **Free-form English STT, 6.89 MiB of models.** Oído v2B's acoustic and
+  language models total 7,220,276 bytes. Pass the transcript to
+  `Agent::turn`, which can dispatch actions supported by the lamp catalog.
+  Oído's timed board benchmarks used audio fed from flash. Its engine uses
+  GPLv3 and its weights carry noncommercial terms. [Oído][oido] ·
+  [Model files][oido-files]
 - **English synthesis, about 1.53 MiB.** US English PicoTTS voice files are
   1,428,064 bytes combined. The port reports roughly 175 KB of code and
   streams 16 kHz, 16-bit audio. Embed one language. Espressif's own TTS
@@ -28,21 +28,18 @@ This is a sizing estimate. The current firmware only logs a greeting.
   [PicoTTS port][pico] · [US voice assets][voices] ·
   [Espressif TTS][tts] · [Espressif benchmark][bench]
 
+## Smaller speech options
+
+For a fixed-command demo, English MultiNet 5 Q8 recognizes registered
+phrases such as “turn on the lamp”. Its three model files total 2,177,064 bytes
+(2.08 MiB). Using it in place of Oído brings the subtotal to about 11.4 MiB.
+This configuration requires a predefined vocabulary. [Model files][mn5] ·
+[Recognition API][multinet]
+
 A smaller playback milestone can use prerecorded English replies. Ten seconds
 total at 16,000 samples/s × 2 bytes costs 320,000 bytes (0.31 MiB) plus
 headers. Clips cover a fixed script. PicoTTS can say a newly supplied name or
 sentence without recording another clip.
-
-## If the user can say any sentence
-
-**Oído v2B** is an ESP32-S3 open-vocabulary English recognizer. Its acoustic
-and language models total 7,220,276 bytes (6.89 MiB). With the example agent
-and English TTS, the subtotal already reaches about 16.24 MiB before the
-recognizer and partitions. Upstream also supports greedy decoding without
-the language model, a possible experiment with a smaller budget and different
-accuracy. The project reports timed tests on audio fed from flash and identifies
-live microphone integration as a separate concern. Its engine uses GPLv3 and
-its weights carry noncommercial terms. [Oído][oido] · [Model files][oido-files]
 
 For comparison, the quantized Whisper tiny.en Q5_1 weights alone are 31 MiB.
 For unrestricted dictation with that model, a companion computer can return
@@ -56,17 +53,17 @@ text while the S3 still owns the catalog, dispatch and LED. [Whisper models][whi
    assets with their actual partition sizes, including bootloader space,
    alignment and any data partitions. A debug ELF's file size includes
    information that never reaches flash. [Partition layout][partitions]
-2. Check linking and model loading first. ESP-SR and the PicoTTS port use
-   ESP-IDF services, while this firmware uses bare-metal Rust. Prototype the
-   required C bindings, allocation, task and flash-mapping support before
-   committing to either engine. [ESP-SR component][sr] · [PicoTTS port][pico]
+2. Verify that the bootloader and model loader can read an asset placed
+   above the 16 MiB boundary in octal flash. The Oído firmware and PicoTTS
+   port use ESP-IDF services. Prototype the C bindings, allocation, task and
+   flash-mapping support required by bare-metal Rust. [Flash addressing][flash] ·
+   [Oído firmware][oido] · [PicoTTS port][pico]
 3. Enable the board's PSRAM and measure peak internal RAM and PSRAM
-   separately during capture, recognition, dispatch and playback. Espressif
-   reports 16 KB internal RAM and 2,310 KB PSRAM for MultiNet 5 Q8 alone.
-   PicoTTS reports just over 1.1 MB of RAM while initialized. Add the audio
-   front end, DMA buffers, stacks and agent scratch. The starter firmware
-   configures only a 73,744-byte reclaimed heap. [Benchmarks][bench] ·
-   [PicoTTS memory use][pico]
+   separately during capture, recognition, dispatch and playback. Include
+   Oído's working buffers and weight cache, microphone buffers, stacks and
+   agent scratch. PicoTTS reports just over 1.1 MB of RAM while initialized.
+   The starter firmware configures only a 73,744-byte reclaimed heap.
+   [Oído memory use][oido] · [PicoTTS memory use][pico]
 4. Speak both lamp commands, then try silence and an unsupported phrase.
    Record end-of-speech to LED and LED to first audio sample. Repeat after
    playback and verify the device state and spoken result agree.
@@ -82,4 +79,4 @@ text while the S3 still owns the catalog, dispatch and LED. [Whisper models][whi
 [oido-files]: https://huggingface.co/lokutor-ai/oido-v2-realtime-int4/tree/main
 [whisper]: https://huggingface.co/ggerganov/whisper.cpp
 [partitions]: https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-guides/partition-tables.html
-[sr]: https://github.com/espressif/esp-sr
+[flash]: https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/spi_flash/spi_flash_optional_feature.html
