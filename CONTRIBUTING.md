@@ -27,7 +27,7 @@ just check
 ```
 
 For a hardware change, include the board variant, wiring and steps used to
-test it. The [parts guide](docs/hardware.md) describes the proposed setup.
+test it. Use the [wiring diagram](docs/wiring.md) as the reference pin map.
 Use `just run` with the board connected to flash the release firmware and
 open the serial monitor.
 

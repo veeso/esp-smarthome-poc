@@ -22,8 +22,9 @@ The workspace has two crates:
 The controller targets the **Espressif ESP32-S3-DevKitC-1-N32R16V** with
 32 MiB flash and 16 MiB PSRAM. The goal is to transcribe free-form English
 on the board, let esp-agent handle supported lamp requests, and speak the
-result. See the [parts and wiring guide](docs/hardware.md) and the
-[32 MiB speech budget](docs/speech.md).
+result. Start with the [parts list](docs/hardware.md), then follow the
+[wiring diagram and pin map](docs/wiring.md). The
+[32 MiB speech budget](docs/speech.md) covers the on-device models.
 
 - [Microphone capture][mic] supplies audio to [speech recognition][stt].
 - The [esp-agent catalog][catalog] names the lamp. A [conversation turn][turn]
