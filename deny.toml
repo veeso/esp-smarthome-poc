@@ -1,4 +1,4 @@
-# cargo-deny policy for the Rust project template.
+# cargo-deny policy for esp-smarthome-poc.
 
 [graph]
 all-features = true
@@ -10,7 +10,11 @@ feature-depth = 1
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
 unmaintained = "all"
-ignore = []
+ignore = [
+  # Unmaintained, pulled in by the esp-hal dependency tree. No upstream fix.
+  { id = "RUSTSEC-2024-0436", reason = "paste is unmaintained; used by the ESP crates" },
+  { id = "RUSTSEC-2024-0449", reason = "unsafe-libyaml is unmaintained; used by esp-config through serde_yaml" },
+]
 
 [licenses]
 unused-allowed-license = "allow"

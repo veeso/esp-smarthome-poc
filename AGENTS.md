@@ -4,12 +4,20 @@ Guidance for coding agents working in this repository.
 
 ## Project context
 
-This repository is a reusable Rust project template. It starts as one Cargo
-package with both library and binary targets and no third-party Rust
-dependencies.
+This repository is a smart home proof of concept for the ESP32-S3, written in
+bare-metal Rust. It is a virtual Cargo workspace: the hardware-independent
+`no_std` library lives in `crates/esp-smarthome`, and the firmware lives in
+`crates/esp-smarthome-poc`. The setup follows `veeso/esp-agent`.
 
-The toolchain is pinned to Rust 1.98.0 with edition 2024. Keep
-`rust-toolchain.toml` and `package.rust-version` in `Cargo.toml` synchronized.
+The toolchain is the espup `esp` toolchain 1.97.0.0 with edition 2024. The
+library also builds and tests on regular computers with the standard Rust
+toolchain 1.97. Keep these synchronized:
+
+- `rust-toolchain.toml`
+- `workspace.package.rust-version` in `Cargo.toml`
+- `host_toolchain` in `just/build.just`
+- the `version:` input of `esp-rs/xtensa-toolchain` and every
+  `RUSTUP_TOOLCHAIN` in `.github/workflows/`
 
 ## Working rules
 
@@ -27,11 +35,22 @@ The toolchain is pinned to Rust 1.98.0 with edition 2024. Keep
 
 ## Source layout
 
-- `src/lib.rs` contains the public library API and its focused unit tests.
-- `src/main.rs` is the binary entry point and may call the library API.
-- Keep both targets unless the requested project is explicitly library-only or
-  binary-only.
+- `crates/esp-smarthome/src/lib.rs` contains the library API and its focused
+  unit tests. The library depends on no HAL, enables no chip features, and must
+  build for both the ESP32-S3 and Linux x86_64.
+- `crates/esp-smarthome-poc/src/main.rs` is the firmware entry point, and its
+  `build.rs` configures the linker.
+- `.cargo/config.toml` sets the default target, runner, and build flags.
+  `.cargo/esp-config.toml` holds user and runtime settings such as `ESP_LOG`.
+- Put logic that does not touch hardware in the library, so it can be tested.
 - Use `module_name.rs`; never introduce `mod.rs`.
+
+## ESP notes
+
+- Load `$HOME/export-esp.sh` before building the firmware.
+- Avoid `std`; use `core` and embedded-friendly crates.
+- `alloc` is enabled. If allocations fail, adjust `HEAP_SIZE` in the firmware.
+- `just run` flashes the board and opens the monitor.
 
 ## Rust conventions
 
@@ -55,7 +74,11 @@ Run `just` to list every command. The primary recipes are:
 
 ```sh
 just build
+just build_s3
+just build_host
 just release
+just run
+just monitor
 just test
 just coverage
 just fmt
@@ -68,8 +91,11 @@ just check
 just setup_githooks
 ```
 
+Recipes with the suffix `_s3` run for the chip, and recipes with the suffix
+`_host` run for the computer. The unsuffixed recipe runs both.
+
 `just check` is the required local quality gate. It runs formatting checks,
-Clippy with warnings denied, rustdoc with warnings denied, cargo-deny, and the
+Clippy and rustdoc with warnings denied for both targets, cargo-deny, and the
 test suite.
 
 When invoking compilation or test commands from the CLI, never request
@@ -80,7 +106,9 @@ the local cap in tracked project files.
 
 The local recipes expect:
 
-- Rust and rustup.
+- espup with the `esp` toolchain 1.97.0.0, and rustup.
+- The standard Rust toolchain 1.97 with `clippy` and `llvm-tools-preview`.
+- espflash.
 - just.
 - cargo-nextest for running tests.
 - dprint 0.56.1 and nightly rustfmt.

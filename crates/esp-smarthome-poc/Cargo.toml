@@ -1,0 +1,28 @@
+[package]
+name = "esp-smarthome-poc"
+version.workspace = true
+authors.workspace = true
+categories = ["embedded", "no-std"]
+edition.workspace = true
+keywords = ["esp32", "esp32s3", "smart-home"]
+license.workspace = true
+publish = false
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "ESP32-S3 firmware of the smart home proof of concept"
+
+[dependencies]
+esp-alloc = { workspace = true, features = ["esp32s3"] }
+esp-backtrace = { workspace = true, features = ["esp32s3", "panic-handler", "println"] }
+esp-bootloader-esp-idf = { workspace = true, features = ["esp32s3", "log-04"] }
+esp-hal = { workspace = true, features = ["esp32s3", "log-04"] }
+esp-println = { workspace = true, features = ["esp32s3", "log-04"] }
+esp-smarthome = { workspace = true }
+log = { workspace = true }
+
+[[bin]]
+name = "esp-smarthome-poc"
+path = "src/main.rs"
+bench = false
+test = false

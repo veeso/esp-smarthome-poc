@@ -1,0 +1,22 @@
+[package]
+name = "esp-smarthome"
+version.workspace = true
+authors.workspace = true
+categories = ["embedded", "no-std"]
+edition.workspace = true
+include = [
+  "Cargo.toml",
+  "../../LICENSE",
+  "../../README.md",
+  "src/**",
+]
+keywords = ["esp32", "esp32s3", "smart-home"]
+license.workspace = true
+publish = false
+readme = "../../README.md"
+repository.workspace = true
+rust-version.workspace = true
+description = "Hardware-independent logic of the ESP32 smart home proof of concept"
+
+[lints]
+workspace = true
