@@ -19,8 +19,9 @@ speaker directly. See the [wiring diagram and pin map](wiring.md) for assembly.
   as a price reference. [Amplifier][amp] · [Amazon.it amp search][buy-amp]
 - **1 speaker.** A passive 8 Ω, 3 W miniature speaker with two wire leads
   fits the amplifier's screw terminal. [Amazon.it speaker search][buy-speaker]
-- **1 lamp.** One ordinary red LED and one 330 Ω resistor in series.
-  Reuse parts from a starter kit.
+- **2 LEDs and 2 resistors.** Use a red LED for the lamp and a green LED for
+  the listening indicator. Choose low-current indicator LEDs suitable for
+  3.3 V GPIO and put a separate 330 Ω resistor in series with each.
 - **Bench supplies.** One USB data cable matching the board connector, a
   solderless breadboard and jumper wires. Female-to-male jumpers also work
   if a wide development board covers both rows of a breadboard.
@@ -33,7 +34,7 @@ and pack quantity when comparing local prices.
 The ESP32-S3 has two I²S controllers. One shared pair of clocks and two data
 lines serve the microphone and amplifier. The pinned Rust HAL (`esp-hal`
 1.2.2) provides I²S receive and transmit with DMA through its `unstable`
-feature. The external LED uses a regular GPIO output. [I²S guide][i2s]
+feature. Each LED uses its own GPIO output. [I²S guide][i2s]
 
 Both hardware I²C controllers are available for future sensors. The HAL
 provides an I²C master driver, and the chip supports 100 and 400 kHz.

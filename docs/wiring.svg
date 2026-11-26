@@ -1,10 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520"
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="565" viewBox="0 0 960 565"
      role="img" aria-labelledby="title desc">
   <title id="title">Voice-controlled lamp wiring</title>
   <desc id="desc">The ESP32-S3 supplies 3.3 V to the INMP441 and 5 V to the MAX98357A.
     Both share ground, bit clock GPIO4 and word select GPIO5. Mic L/R is grounded.
-    GPIO6 receives mic data, GPIO7 sends speaker data, and GPIO8 drives a red LED
-    through 330 ohms to ground. The speaker connects across the amplifier outputs.</desc>
+    GPIO6 receives mic data and GPIO7 sends speaker data. GPIO8 drives the red lamp
+    and GPIO11 drives the green listening LED, each through its own 330-ohm resistor
+    to common ground. The speaker connects across the amplifier outputs.</desc>
   <style>
     text { font-family: sans-serif; font-size: 16px; fill: #192d3d; }
     .part { font-size: 22px; font-weight: bold; }
@@ -19,7 +20,7 @@
     .data { stroke: #315d3a; }
     .lamp { stroke: #885728; }
   </style>
-  <rect width="960" height="520" fill="#fafbfd"/>
+  <rect width="960" height="565" fill="#fafbfd"/>
 
   <!-- Board and breakout edges terminate the wires at their labelled pins. -->
   <rect class="box" x="24" y="24" width="205" height="300" rx="10"/>
@@ -58,20 +59,31 @@
   <g class="center">
     <text x="480" y="219">GPIO4 · shared bit clock</text>
     <text x="480" y="256">GPIO5 · shared word select</text>
-    <text x="388" y="399">GPIO8</text><text x="551" y="399">GND</text>
+    <text x="370" y="399">GPIO8</text><text x="480" y="399">GPIO11</text>
+    <text x="597" y="399">GND</text>
     <text x="787" y="352">OUT+</text><text x="879" y="352">OUT−</text>
   </g>
 
-  <!-- The lamp is a series circuit. The speaker has its own pair of wires. -->
-  <path class="wire lamp" d="M388 414 V459 H359 M306 459 H270"/>
-  <rect x="306" y="451" width="53" height="16" fill="white" stroke="#885728" stroke-width="2"/>
-  <text class="center" x="332" y="440">330 Ω</text>
-  <path d="M270 448 L250 459 L270 470 Z M249 447 V471" fill="#b84c43" stroke="#933b35" stroke-width="2"/>
-  <path d="M256 446 l-9 -9 m1 5 l-1 -5 5 1 M266 444 l-9 -9 m1 5 l-1 -5 5 1"
-        fill="none" stroke="#933b35" stroke-width="1.5"/>
-  <path class="wire ground" d="M249 459 H217 V493 H551 V414"/>
-  <text class="right" x="204" y="454">Red LED</text>
-  <text class="note right" x="204" y="475">Cathode at bar</text>
+  <!-- Each LED has its own resistor. Only their cathodes share a net. -->
+  <g fill="white" stroke="#885728" stroke-width="2">
+    <path class="wire lamp" d="M370 414 V433 M370 466 V488 M480 414 V433 M480 466 V488"/>
+    <rect x="363" y="433" width="14" height="33"/>
+    <rect x="473" y="433" width="14" height="33"/>
+  </g>
+  <text class="right" x="350" y="455">330 Ω</text><text x="500" y="455">330 Ω</text>
+  <g fill="#b84c43" stroke="#933b35" stroke-width="2">
+    <path d="M360 488 H380 L370 507 Z M358 509 H382"/>
+    <path d="M378 500 l9 8 m-5 -1 l5 1 -1 -5 M381 493 l9 8 m-5 -1 l5 1 -1 -5" fill="none"/>
+  </g>
+  <g fill="#478555" stroke="#315d3a" stroke-width="2">
+    <path d="M470 488 H490 L480 507 Z M468 509 H492"/>
+    <path d="M488 500 l9 8 m-5 -1 l5 1 -1 -5 M491 493 l9 8 m-5 -1 l5 1 -1 -5" fill="none"/>
+  </g>
+  <path class="wire ground" d="M370 509 V540 H597 V414 M480 509 V540"/>
+  <circle cx="480" cy="540" r="4.5" fill="#394653"/>
+  <text class="right" x="345" y="501">Red lamp</text>
+  <text x="507" y="495">Green LED</text>
+  <text class="note" x="507" y="514">Listening</text>
   <path class="wire data" d="M787 367 V420 M879 367 V420"/>
   <rect class="box" x="749" y="420" width="168" height="60" rx="8"/>
   <g class="center">
