@@ -19,9 +19,11 @@ The workspace has two crates:
 
 ## Build the first lamp
 
-Start with the [parts and wiring guide](docs/hardware.md) and the
-[16 MiB speech budget](docs/speech.md). The candidate build uses a single
-English voice, local command recognition and one on/off LED.
+The controller targets the **Espressif ESP32-S3-DevKitC-1-N32R16V** with
+32 MiB flash and 16 MiB PSRAM. The goal is to transcribe free-form English
+on the board, let esp-agent handle supported lamp requests, and speak the
+result. See the [parts and wiring guide](docs/hardware.md) and the
+[32 MiB speech budget](docs/speech.md).
 
 - [Microphone capture][mic] supplies audio to [speech recognition][stt].
 - The [esp-agent catalog][catalog] names the lamp. A [conversation turn][turn]

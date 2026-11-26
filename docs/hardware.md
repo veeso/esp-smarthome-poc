@@ -1,14 +1,15 @@
 # Parts for one voice-controlled lamp
 
-For the first build, use an ESP32-S3 with **16 MiB flash and 8 MiB PSRAM**,
-one digital microphone, and one mono speaker. Both audio breakouts use I²S.
+Use the **Espressif ESP32-S3-DevKitC-1-N32R16V** with **32 MiB flash and
+16 MiB PSRAM**, one digital microphone and one mono speaker. Both audio
+breakouts use I²S.
 The amplifier converts digital samples and drives the speaker, so this set
 needs neither an I²C control board nor a separate audio codec.
 
 ## Shopping list
 
-- **1 controller.** Waveshare ESP32-S3-DEV-KIT-N16R8 with the PCB antenna
-  and headers fitted. Check the selected variant for the exact N16R8 suffix.
+- **1 controller.** Order the DevKitC-1 development board with headers and
+  the exact N32R16V suffix. Its module is marked ESP32-S3-WROOM-2-N32R16V.
   Flash stores firmware and models. PSRAM holds speech-engine working memory.
   [Board variants][board] · [Amazon.it board search][buy-board]
 - **1 microphone.** An INMP441 I²S breakout with headers fitted and pins
@@ -31,8 +32,10 @@ and pack quantity when comparing local prices.
 ## Wiring for the first bench test
 
 With USB disconnected, wire by signal name. Choose exposed GPIOs using the
-pinout for the exact board revision. On the Waveshare N16R8, GPIO35 through
-GPIO37 are unavailable. [Board pinout][board]
+pinout for the exact board revision. The WROOM-2 module uses GPIO35 through
+GPIO37 for its octal memory. One candidate assignment is GPIO4 for bit clock,
+GPIO5 for word select, GPIO6 for microphone data, GPIO7 for amplifier data,
+and GPIO8 for the external LED. [Board pinout][board]
 
 - Connect module grounds to board GND. Power the INMP441 from 3V3 and tie
   L/R to ground for the left slot. The ESP supplies bit clock to SCK and word
@@ -50,11 +53,11 @@ short mic capture. Use 16 kHz mono PCM for the speech interfaces. Capture the
 left slot and scale to signed 16-bit samples. Listen and speak in alternating
 turns to avoid transcribing the controller's own reply.
 
-[board]: https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8
+[board]: https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html
 [mic]: https://invensense.tdk.com/wp-content/uploads/2015/02/INMP441.pdf
 [amp]: https://www.adafruit.com/product/3006
 [pins]: https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/pinouts
-[buy-board]: https://www.amazon.it/s?k=ESP32-S3-DEV-KIT-N16R8
+[buy-board]: https://www.amazon.it/s?k=ESP32-S3-DevKitC-1-N32R16V
 [buy-mic]: https://www.amazon.it/s?k=INMP441+I2S
 [buy-amp]: https://www.amazon.it/s?k=MAX98357A+I2S
 [buy-speaker]: https://www.amazon.it/s?k=altoparlante+8+ohm+3W+fili
