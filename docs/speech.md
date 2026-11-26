@@ -4,7 +4,8 @@ The ESP32-S3-DevKitC-1-N32R16V has **32 MiB flash and 16 MiB PSRAM**.
 For free-form English input, the esp-agent example with Potion (7.82 MiB),
 Oído v2B models (6.89 MiB) and US English PicoTTS (1.53 MiB) total about
 **16.24 MiB**. That exceeds the old 16 MiB budget and leaves **15.76 MiB**
-on the selected board for the STT engine, remaining firmware and partitions.
+on the selected board for wake detection (model and runtime), the STT engine,
+remaining firmware and partitions. Wake detection has yet to be sized.
 This estimates one application image. The integrated image size, peak RAM
 use and microphone-to-reply latency still need measurements on the board.
 
@@ -27,6 +28,20 @@ use and microphone-to-reply latency still need measurements on the board.
   supports Chinese and its published flash figure is 2.2 MB.
   [PicoTTS port][pico] · [US voice assets][voices] ·
   [Espressif TTS][tts] · [Espressif benchmark][bench]
+
+## Wake name and listening indicator
+
+While idle, the microphone feeds a local wake-word detector and the green
+indicator stays off. Detecting the wake name opens one command capture window
+and turns the green LED on. End of speech, silence timeout or a capture error
+closes the window and turns the indicator off. After a spoken reply, the
+controller resumes wake detection. Only a successful lamp command changes the
+red LED.
+
+The wake name is undecided. “Tofu” is one candidate. Espressif's WakeNet is
+an ESP32-S3 option to evaluate with a supplied wake phrase first. A custom
+name needs a matching wake-word model. Measure its flash size, idle RAM use,
+missed wakes and false activations on the board. [WakeNet][wake]
 
 ## Smaller speech options
 
@@ -64,8 +79,9 @@ text while the S3 still owns the catalog, dispatch and LED. [Whisper models][whi
    agent scratch. PicoTTS reports just over 1.1 MB of RAM while initialized.
    The starter firmware configures only a 73,744-byte reclaimed heap.
    [Oído memory use][oido] · [PicoTTS memory use][pico]
-4. Speak both lamp commands, then try silence and an unsupported phrase.
-   Record end-of-speech to LED and LED to first audio sample. Repeat after
+4. Say the wake name before each lamp command, then try silence and an
+   unsupported phrase. Record wake detection to green indicator, end of
+   command to red lamp change, and lamp change to first reply sample. Repeat after
    playback and verify the device state and spoken result agree.
 
 [agent]: https://github.com/veeso/esp-agent/tree/8db97faf294d961e213babf9cf8dd5116cb968a5#embedding-models
@@ -75,6 +91,7 @@ text while the S3 still owns the catalog, dispatch and LED. [Whisper models][whi
 [voices]: https://github.com/DiUS/esp-picotts/tree/4ff043750e937587194a5cfc7c8b1bfe494183ae/pico/lang
 [tts]: https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/speech_synthesis/readme.html
 [bench]: https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/benchmark/README.html
+[wake]: https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/wake_word_engine/README.html
 [oido]: https://github.com/lokutor-ai/oido
 [oido-files]: https://huggingface.co/lokutor-ai/oido-v2-realtime-int4/tree/main
 [whisper]: https://huggingface.co/ggerganov/whisper.cpp

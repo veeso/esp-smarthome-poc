@@ -6,10 +6,11 @@
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://www.conventionalcommits.org)
 
-A voice-controlled lamp on the ESP32-S3, written in bare-metal Rust. The
-first demo will let someone say “turn on the lamp”, see an LED light up and
-hear the controller confirm the result. The current firmware logs a greeting
-over USB. The voice and device modules are tracked below.
+A voice-controlled lamp on the ESP32-S3, written in bare-metal Rust. In the
+planned demo, you say the controller's wake name. A green LED comes on while
+it listens for your command. Say “turn on the lamp” and the red lamp lights
+up, followed by a spoken confirmation. The wake name is undecided.
+The current firmware logs a greeting over USB.
 
 The workspace has two crates:
 
@@ -26,7 +27,8 @@ result. Start with the [parts list](docs/hardware.md), then follow the
 [wiring diagram and pin map](docs/wiring.md). The
 [32 MiB speech budget](docs/speech.md) covers the on-device models.
 
-- [Microphone capture][mic] supplies audio to [speech recognition][stt].
+- [Microphone capture][mic] feeds the wake-word detector while idle. After
+  activation it supplies command audio to [speech recognition][stt].
 - The [esp-agent catalog][catalog] names the lamp. A [conversation turn][turn]
   resolves the user's command and calls the [device interface][device].
 - The [LED driver][led] switches the lamp. [Speech synthesis][tts] turns the
