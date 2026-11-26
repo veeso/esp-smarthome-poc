@@ -6,13 +6,30 @@
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://www.conventionalcommits.org)
 
-A smart home proof of concept on the ESP32-S3, written in bare-metal Rust.
+A voice-controlled lamp on the ESP32-S3, written in bare-metal Rust. The
+first demo will let someone say “turn on the lamp”, see an LED light up and
+hear the controller confirm the result. The current firmware logs a greeting
+over USB. The voice and device modules are tracked below.
 
 The workspace has two crates:
 
 - `crates/esp-smarthome` is the hardware-independent `no_std` library. It
   builds for the ESP32-S3 and for Linux x86_64, where its tests run.
 - `crates/esp-smarthome-poc` is the ESP32-S3 firmware.
+
+## Build the first lamp
+
+Start with the [parts and wiring guide](docs/hardware.md) and the
+[16 MiB speech budget](docs/speech.md). The candidate build uses a single
+English voice, local command recognition and one on/off LED.
+
+- [Microphone capture][mic] supplies audio to [speech recognition][stt].
+- The [esp-agent catalog][catalog] names the lamp. A [conversation turn][turn]
+  resolves the user's command and calls the [device interface][device].
+- The [LED driver][led] switches the lamp. [Speech synthesis][tts] turns the
+  outcome into a reply for [speaker playback][speaker].
+
+See [Contributing](CONTRIBUTING.md) to work on a module.
 
 ## Install the tools
 
@@ -130,25 +147,18 @@ GitHub Actions provides:
 - Formatting and dependency-policy checks.
 - TruffleHog secret scanning.
 - zizmor workflow-security auditing.
-- Manual crates.io dry runs and trusted publishing.
 
 CI does not run the firmware on hardware.
-
-## Publish the library
-
-Only `esp-smarthome` is publishable. Generate and review the changelog section
-for the package version, then open the `Publish` workflow in GitHub Actions.
-The workflow defaults to a dry run. For a live release, disable `dry_run`
-after configuring crates.io trusted publishing for this repository and
-workflow. After crates.io accepts the package, the workflow creates the
-matching `v<version>` Git tag.
-
-For a local package verification without uploading:
-
-```sh
-just publish "--dry-run --allow-dirty"
-```
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+[mic]: https://github.com/veeso/esp-smarthome-poc/issues/2
+[speaker]: https://github.com/veeso/esp-smarthome-poc/issues/3
+[stt]: https://github.com/veeso/esp-smarthome-poc/issues/4
+[tts]: https://github.com/veeso/esp-smarthome-poc/issues/5
+[device]: https://github.com/veeso/esp-smarthome-poc/issues/6
+[led]: https://github.com/veeso/esp-smarthome-poc/issues/7
+[catalog]: https://github.com/veeso/esp-smarthome-poc/issues/8
+[turn]: https://github.com/veeso/esp-smarthome-poc/issues/9

@@ -1,6 +1,6 @@
 ---
 name: New feature
-about: Propose a new feature for esp-agent
+about: Propose a new feature for the ESP32-S3 smart home controller
 title: ""
 labels: enhancement
 ---
