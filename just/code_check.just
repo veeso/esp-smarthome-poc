@@ -10,15 +10,33 @@ fmt args="":
 fmt_check args="":
   dprint check {{ args }}
 
-# Run Clippy for every target and feature.
+# Run Clippy for the ESP32-S3.
 [group('code-check')]
-clippy args="":
-  cargo clippy --all-targets --all-features {{ args }}
+clippy_s3 args="":
+  cargo clippy --locked --workspace --all-features {{ args }}
 
-# Build Rust documentation and deny warnings.
+# Run Clippy for every library target on this computer.
 [group('code-check')]
-doc args="":
-  RUSTDOCFLAGS="-D warnings" cargo doc --all-features --no-deps {{ args }}
+clippy_host args="":
+  {{ host_cargo }} clippy --locked --package {{ library }} --all-targets --all-features --target host-tuple {{ args }}
+
+# Run Clippy for the ESP32-S3 and for this computer.
+[group('code-check')]
+clippy args="": (clippy_s3 args) (clippy_host args)
+
+# Build the documentation for the ESP32-S3 and deny warnings.
+[group('code-check')]
+doc_s3 args="":
+  RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --all-features --no-deps {{ args }}
+
+# Build the library documentation for this computer and deny warnings.
+[group('code-check')]
+doc_host args="":
+  RUSTDOCFLAGS="-D warnings" {{ host_cargo }} doc --locked --package {{ library }} --all-features --no-deps --target host-tuple {{ args }}
+
+# Build the documentation for the ESP32-S3 and for this computer.
+[group('code-check')]
+doc args="": (doc_s3 args) (doc_host args)
 
 # Check advisories, licenses, bans, and dependency sources.
 [group('code-check')]

@@ -1,3 +1,6 @@
+# This is the espup toolchain, pinned to 1.97.0.0.
+# Install it with `espup install --toolchain-version 1.97.0.0`.
+# CI pins the same version in the `version:` input of esp-rs/xtensa-toolchain.
+# Custom toolchains do not support `components`, so none are listed here.
 [toolchain]
-channel = "1.100.0"
-components = ["clippy", "rustfmt"]
+channel = "esp"
