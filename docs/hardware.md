@@ -17,6 +17,8 @@ speaker directly. See the [wiring diagram and pin map](wiring.md) for assembly.
 - **1 amplifier.** A MAX98357A mono I²S breakout with headers and a fitted
   speaker terminal. Adafruit #3006 lists at US$5.95 before shipping and tax
   as a price reference. [Amplifier][amp] · [Amazon.it amp search][buy-amp]
+- **1 amplifier shutdown resistor.** Use a 10 kΩ pull-down on SD/MODE
+  for the Adafruit #3006 circuit shown in the wiring guide.
 - **1 speaker.** A passive 8 Ω, 3 W miniature speaker with two wire leads
   fits the amplifier's screw terminal. [Amazon.it speaker search][buy-speaker]
 - **2 LEDs and 2 resistors.** Use a red LED for the lamp and a green LED for

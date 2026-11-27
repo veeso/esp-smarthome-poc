@@ -22,19 +22,28 @@ module's octal memory. [DevKitC-1 header and power options][board]
 | G (GND)    | 22          | Mic GND and L/R, amp GND, both LED cathodes          |
 | GPIO4      | 4           | Mic SCK and amp BCLK (shared bit clock)              |
 | GPIO5      | 5           | Mic WS and amp LRC (shared word select)              |
-| GPIO6      | 6           | Mic SD (data from mic to ESP)                        |
+| GPIO6      | 6           | Mic SD (serial data from mic to ESP)                 |
 | GPIO7      | 7           | Amp DIN (data from ESP to amp)                       |
 | GPIO8      | 12          | 330 Ω resistor to red lamp LED anode                 |
 | GPIO11     | 17          | Separate 330 Ω resistor to green listening LED anode |
+| GPIO12     | 18          | Amp SD/MODE (shutdown); 10 kΩ from SD/MODE to GND    |
 
 - **Microphone.** Grounding L/R selects the left audio slot. Power VDD from
   3V3. Check whether the breakout includes the datasheet's 100 kΩ pull-down
-  on SD. If absent, add one between SD and GND. [INMP441 datasheet][mic]
+  on SD. If absent, add one between SD and GND. On this module **SD means
+  serial data**, an output, not a control pin. Leave the shared clocks wired
+  during playback; firmware ignores mic samples until listening resumes.
+  [INMP441 datasheet][mic]
 - **Speaker.** Connect its two leads directly across the amplifier's OUT+
   and OUT− terminals. Both terminals are driven, so keep both leads
-  isolated from ground. On the Adafruit #3006 breakout, leave GAIN and
-  SD/MODE at their factory settings for the first test. The amplifier's
-  SD/MODE controls shutdown and channel selection. [Amplifier pinout][amp]
+  isolated from ground. Leave GAIN at its factory setting.
+- **Amplifier shutdown.** Only the amplifier uses **SD for shutdown**.
+  On Adafruit #3006, SD/MODE has a 1 MΩ pull-up to VIN and a 100 kΩ
+  internal pull-down. Add 10 kΩ from SD/MODE to GND: with 5 V on VIN
+  and GPIO12 undriven at reset, the pin sits near 0.045 V (shutdown is
+  below 0.16 V). Check the bias network before using another breakout.
+  Drive GPIO12 low while listening and high (3.3 V) for playback. Above
+  1.4 V the amplifier plays the left slot. [Amplifier pinout][amp]
 - **LEDs.** Connect each GPIO through its resistor to its LED's anode.
   Connect each cathode (usually the short leg, beside the flat edge) to the
   common ground rail. Driving either output high lights that LED independently.
@@ -48,13 +57,18 @@ for fitted pull-ups before adding resistors. [ESP32-S3 I²C guide][i2c]
 
 ## First power-up
 
-1. Connect USB and run `just run` with the ESP toolchain loaded. The current
-   firmware prints its greeting and idles. [Toolchain setup][setup]
+1. Connect USB. Measure amp SD/MODE relative to GND with reset held and
+   again after release: expect less than 0.16 V in both cases. Run `just run`
+   with the ESP toolchain loaded. The current firmware prints its greeting
+   and idles. [Toolchain setup][setup]
 2. Once the GPIO drivers are available, toggle GPIO8 and GPIO11 separately.
    Check that GPIO8 controls the red lamp and GPIO11 controls the green indicator.
-3. Once playback is available, send a quiet test tone to both I²S slots.
-   Listen at the speaker before trying a synthesized sentence.
+3. Once playback is available, send a quiet tone in the left I²S slot with
+   silence in the right. Check for about 3.3 V at amp SD/MODE and listen
+   for the tone. After the last sample, check that SD/MODE returns below
+   0.16 V and the speaker is silent.
 4. Once capture is available, record a short phrase with the speaker silent.
+   Verify amp SD/MODE stays below 0.16 V while listening.
    At 16 kHz with two 32-bit slots, WS is 16 kHz and BCLK is 1.024 MHz.
    Read the signed 24-bit microphone sample from the left slot and scale
    it to signed 16-bit PCM for speech recognition. [INMP441 datasheet][mic]
