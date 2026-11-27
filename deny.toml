@@ -35,7 +35,10 @@ allow = [
   "Zlib",
 ]
 confidence-threshold = 0.8
-exceptions = []
+exceptions = [
+  { crate = "oido", allow = ["GPL-3.0-only"] },
+  { crate = "oido-reference", allow = ["GPL-3.0-only"] },
+]
 
 [licenses.private]
 ignore = false

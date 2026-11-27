@@ -1,0 +1,35 @@
+[package]
+name = "mic-stt-demo"
+version.workspace = true
+authors.workspace = true
+categories = ["embedded", "no-std"]
+edition.workspace = true
+keywords = ["esp32s3", "speech-to-text", "wake-word"]
+license.workspace = true
+publish = false
+readme.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "ESP32-S3 demo that wakes on “doufu” and prints the transcript of the next spoken command"
+
+[dependencies]
+oido = { workspace = true }
+
+[target.'cfg(target_os = "none")'.dependencies]
+embassy-executor = { workspace = true }
+embassy-time = { workspace = true }
+esp-alloc = { workspace = true, features = ["esp32s3"] }
+esp-backtrace = { workspace = true, features = ["esp32s3", "panic-handler", "println"] }
+esp-bootloader-esp-idf = { workspace = true, features = ["esp32s3", "log-04"] }
+esp-hal = { workspace = true, features = ["esp32s3", "log-04", "unstable"] }
+esp-println = { workspace = true, features = ["esp32s3", "log-04"] }
+esp-rtos = { workspace = true, features = ["embassy", "esp-alloc", "esp32s3", "log-04"] }
+log = { workspace = true }
+
+[[bin]]
+name = "mic-stt-demo"
+path = "src/main.rs"
+bench = false
+
+[lints]
+workspace = true

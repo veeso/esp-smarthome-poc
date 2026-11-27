@@ -18,10 +18,12 @@ just test
 
 ## Verify a change
 
-Load the ESP environment before running the full quality gate.
+Load the ESP environment and download the speech models before running the
+full quality gate. Every build of the chip targets needs the models.
 
 ```sh
 . "$HOME/export-esp.sh"
+just download_oido_assets
 just fmt
 just check
 ```

@@ -1,0 +1,29 @@
+[package]
+name = "oido"
+version.workspace = true
+authors.workspace = true
+categories = ["embedded", "no-std"]
+edition.workspace = true
+include = [
+  "Cargo.toml",
+  "LICENSE",
+  "README.md",
+  "src/**",
+]
+keywords = ["asr", "esp32s3", "speech-to-text"]
+license = "GPL-3.0-only"
+publish = false
+readme = "README.md"
+repository.workspace = true
+rust-version.workspace = true
+description = "no_std Rust port of the Oído on-device English speech-to-text engine"
+
+[dependencies]
+bytemuck = { workspace = true }
+libm = { workspace = true }
+
+[dev-dependencies]
+oido-reference = { workspace = true }
+
+[lints]
+workspace = true

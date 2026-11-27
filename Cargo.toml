@@ -12,13 +12,21 @@ repository = "https://github.com/veeso/esp-smarthome-poc"
 rust-version = "1.97"
 
 [workspace.dependencies]
+bytemuck = { version = "1", default-features = false }
+cc = "1"
+embassy-executor = "0.10"
+embassy-time = "0.5"
 esp-alloc = "0.11"
 esp-backtrace = "0.20"
 esp-bootloader-esp-idf = "0.6"
 esp-hal = "1.2"
 esp-println = "0.18"
+esp-rtos = "0.4"
 esp-smarthome = { path = "crates/esp-smarthome", version = "0.1" }
+libm = { version = "0.2", default-features = false }
 log = "0.4"
+oido = { path = "crates/oido" }
+oido-reference = { path = "crates/oido-reference" }
 
 [workspace.lints.rust]
 ambiguous_negative_literals = "warn"
@@ -68,3 +76,7 @@ codegen-units = 1
 debug = 2
 lto = "fat"
 opt-level = "s"
+
+# Speech recognition is bound by the processor, so it is built for speed.
+[profile.release.package.oido]
+opt-level = 3
