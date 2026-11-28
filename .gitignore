@@ -5,6 +5,9 @@
 /lcov.info
 *.profraw
 
+# Downloaded speech models
+/models/
+
 # Local environment
 .env
 .env.*

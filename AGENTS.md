@@ -7,7 +7,10 @@ Guidance for coding agents working in this repository.
 This repository is a smart home proof of concept for the ESP32-S3, written in
 bare-metal Rust. It is a virtual Cargo workspace: the hardware-independent
 `no_std` library lives in `crates/esp-smarthome`, and the firmware lives in
-`crates/esp-smarthome-poc`. The setup follows `veeso/esp-agent`.
+`crates/esp-smarthome-poc`. The `no_std` Oído speech-to-text port lives in
+`crates/oido`, its C test oracle in `crates/oido-reference`, and the “doufu”
+microphone demo firmware in `crates/mic-stt-demo`. The setup follows
+`veeso/esp-agent`.
 
 The toolchain is the espup `esp` toolchain 1.97.0.0 with edition 2024. The
 library also builds and tests on regular computers with the standard Rust
@@ -40,6 +43,17 @@ toolchain 1.97. Keep these synchronized:
   build for both the ESP32-S3 and Linux x86_64.
 - `crates/esp-smarthome-poc/src/main.rs` is the firmware entry point, and its
   `build.rs` configures the linker.
+- `crates/oido/src/lib.rs` is the entry point of the `no_std` Rust port of the
+  Oído engine: model parsing, the segmenter, and the transcriber. It must build
+  for both the ESP32-S3 and the computer.
+- `crates/oido-reference` builds the unmodified upstream C engine from
+  `vendor/` through `cc`. It is a test-only oracle for the computer and is
+  empty on the chip.
+- `crates/mic-stt-demo/src/main.rs` is the microphone demo entry point.
+  Hardware-independent logic lives in `state.rs`, `wake.rs`, and `pcm.rs`,
+  and the chip code under `firmware/`. Its `build.rs` requires the Oído models.
+- The Oído models and test clips are downloaded into the ignored `models/oido/`
+  directory. Every chip build and the tests need them.
 - `.cargo/config.toml` sets the default target, runner, and build flags.
   `.cargo/esp-config.toml` holds user and runtime settings such as `ESP_LOG`.
 - Put logic that does not touch hardware in the library, so it can be tested.
@@ -51,6 +65,9 @@ toolchain 1.97. Keep these synchronized:
 - Avoid `std`; use `core` and embedded-friendly crates.
 - `alloc` is enabled. If allocations fail, adjust `HEAP_SIZE` in the firmware.
 - `just run` flashes the board and opens the monitor.
+- `just run_mic_demo <board>` flashes the microphone demo and opens the
+  monitor; `<board>` is `n16r8` or `n32r16v`.
+- Run `just download_oido_assets` once before building or checking.
 
 ## Rust conventions
 
@@ -73,11 +90,13 @@ recipe, add a focused recipe before using it.
 Run `just` to list every command. The primary recipes are:
 
 ```sh
+just download_oido_assets
 just build
 just build_s3
 just build_host
 just release
 just run
+just run_mic_demo n16r8
 just monitor
 just test
 just coverage
@@ -110,6 +129,8 @@ The local recipes expect:
 - The standard Rust toolchain 1.97 with `clippy` and `llvm-tools-preview`.
 - espflash.
 - just.
+- A C compiler for the computer, used by `oido-reference` through `cc`.
+- curl and shasum for `just download_oido_assets`.
 - cargo-nextest for running tests.
 - dprint 0.56.1 and nightly rustfmt.
 - cargo-deny.

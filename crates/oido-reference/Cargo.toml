@@ -1,0 +1,16 @@
+[package]
+name = "oido-reference"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license = "GPL-3.0-only"
+publish = false
+repository.workspace = true
+rust-version.workspace = true
+description = "Test-only C oracle built from the upstream Oído engine"
+
+[build-dependencies]
+cc = { workspace = true }
+
+[lints]
+workspace = true
