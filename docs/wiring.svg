@@ -3,7 +3,8 @@
   <title id="title">Voice-controlled lamp wiring</title>
   <desc id="desc">The ESP32-S3 supplies 3.3 V to the INMP441 and 5 V to the MAX98357A.
     Both share ground, bit clock GPIO4 and word select GPIO5. Mic L/R is grounded.
-    GPIO6 receives mic data and GPIO7 sends speaker data. GPIO8 drives the red lamp
+    GPIO6 receives mic serial data and GPIO7 sends speaker data. GPIO12 controls amp
+    shutdown via SD/MODE, with a 10 kΩ pull-down to ground. GPIO8 drives the red lamp
     and GPIO11 drives the green listening LED, each through its own 330-ohm resistor
     to common ground. The speaker connects across the amplifier outputs.</desc>
   <style>
@@ -25,7 +26,7 @@
   <!-- Board and breakout edges terminate the wires at their labelled pins. -->
   <rect class="box" x="24" y="24" width="205" height="300" rx="10"/>
   <rect class="box" x="331" y="24" width="298" height="390" rx="10"/>
-  <rect class="box" x="731" y="24" width="205" height="343" rx="10"/>
+  <rect class="box" x="731" y="24" width="205" height="370" rx="10"/>
   <g class="center">
     <text class="part" x="126" y="59">INMP441</text>
     <text class="note" x="126" y="82">I²S microphone</text>
@@ -40,17 +41,23 @@
     <path class="ground" d="M229 157 H331 M229 185 H269 V157 M629 157 H731"/>
     <path class="clock" d="M229 214 H331 M629 214 H731 M229 251 H331 M629 251 H731"/>
     <path class="data" d="M229 294 H331 M629 294 H731"/>
+    <path stroke="#694589" d="M629 330 H731"/>
+    <path class="ground" d="M680 330 V345 M680 374 V387 M668 387 H692 M672 392 H688 M676 397 H684"/>
   </g>
+  <circle cx="680" cy="330" r="4" fill="#694589"/>
+  <rect x="674" y="345" width="12" height="29" fill="white" stroke="#394653" stroke-width="2"/>
+  <text class="note center" x="680" y="418">10 kΩ</text>
   <circle cx="269" cy="157" r="4.5" fill="#394653"/>
   <g class="right">
     <text x="216" y="123">VDD</text><text x="216" y="162">GND</text>
     <text x="216" y="190">L/R</text><text x="216" y="219">SCK</text>
-    <text x="216" y="256">WS</text><text x="216" y="299">SD (out)</text>
+    <text x="216" y="256">WS</text><text x="216" y="299">SD (serial data out)</text>
   </g>
   <g>
     <text x="744" y="123">VIN</text><text x="744" y="162">GND</text>
     <text x="744" y="219">BCLK</text><text x="744" y="256">LRC</text>
     <text x="744" y="299">DIN</text>
+    <text class="right" x="616" y="335">GPIO12</text><text x="744" y="335">SD/MODE (shutdown)</text>
     <text x="344" y="123">3V3</text><text class="right" x="616" y="123">5V</text>
     <text x="344" y="162">GND</text><text class="right" x="616" y="162">GND</text>
     <text x="344" y="299">GPIO6 · RX</text>
@@ -61,7 +68,7 @@
     <text x="480" y="256">GPIO5 · shared word select</text>
     <text x="370" y="399">GPIO8</text><text x="480" y="399">GPIO11</text>
     <text x="597" y="399">GND</text>
-    <text x="787" y="352">OUT+</text><text x="879" y="352">OUT−</text>
+    <text x="787" y="382">OUT+</text><text x="879" y="382">OUT−</text>
   </g>
 
   <!-- Each LED has its own resistor. Only their cathodes share a net. -->
@@ -84,7 +91,7 @@
   <text class="right" x="345" y="501">Red lamp</text>
   <text x="507" y="495">Green LED</text>
   <text class="note" x="507" y="514">Listening</text>
-  <path class="wire data" d="M787 367 V420 M879 367 V420"/>
+  <path class="wire data" d="M787 394 V420 M879 394 V420"/>
   <rect class="box" x="749" y="420" width="168" height="60" rx="8"/>
   <g class="center">
     <text x="787" y="439">+</text><text x="879" y="439">−</text>
